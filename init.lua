@@ -48,6 +48,7 @@ vim.g.maplocalleader = ' '
 --    `:help lazy.nvim.txt` for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
 if not vim.loop.fs_stat(lazypath) then
+
   vim.fn.system {
     'git',
     'clone',
@@ -58,6 +59,12 @@ if not vim.loop.fs_stat(lazypath) then
   }
 end
 vim.opt.rtp:prepend(lazypath)
+
+
+-- TODO: BATTERY
+-- local bat_percentage = require('custom.plugins').termux_battery_percentage()
+-- print(type(bat_percentage))
+-- print(bat_percentage)
 
 -- NOTE: Here is where you install your plugins.
 --  You can configure plugins using the `config` key.
@@ -156,7 +163,7 @@ require('lazy').setup({
   {
     -- Set lualine as statusline
     'nvim-lualine/lualine.nvim',
-    -- See `:help lualine.txt`
+    -- See `:help lualine.txt`\
     opts = {
       options = {
         icons_enabled = true,
@@ -164,6 +171,9 @@ require('lazy').setup({
         component_separators = '|',
         section_separators = '',
       },
+      --sections = {
+      --  lualine_y = {bat_percentage}
+      --},
     },
   },
 
@@ -211,6 +221,26 @@ require('lazy').setup({
     build = ':TSUpdate',
   },
 
+  {
+    'epwalsh/obsidian.nvim',
+    lazy = true,
+    event = {
+      'BufReadPre ' .. vim.fn.expand("~") .. '/storage/shared/Obsidian/**/**.md',
+      'BufNewFile ' .. vim.fn.expand("~") .. '/storage/shared/Obsidian/**/**.md',
+    },
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+    },
+    opts = {
+      workspaces = {
+        {
+          name = 'Notes',
+          path = '~/storage/shared/Obsidian/Notes'
+        },
+      },
+    }
+  },
+
   -- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
   --       These are some example plugins that I've included in the kickstart repository.
   --       Uncomment any of the lines below to enable them.
@@ -226,6 +256,19 @@ require('lazy').setup({
   -- { import = 'custom.plugins' },
 }, {})
 
+-- CUSTOM SETTINGS custom.plugins
+--local custom_init = require('custom.plugins')
+--if os.getenv('HOME') == '/data/data/com.termux/files/home' then
+--  local bat_lvl = custom_init.termux_check_battery()
+--  if bat_lvl ~= nil then
+--    print(bat_lvl.percentage .. "\n" .. bat_lvl.status .. "\n" .. bat_lvl.plugged)
+--    bat_string = tostring(bat_lvl.percentage)
+--  else return
+--  end
+--end
+
+
+
 -- [[ Setting options ]]
 -- See `:help vim.o`
 -- NOTE: You can change these options as you wish!
@@ -235,6 +278,9 @@ vim.o.hlsearch = false
 
 -- Make line numbers default
 vim.wo.number = true
+
+-- Set relative line numbers
+vim.wo.relativenumber = true
 
 -- Enable mouse mode
 vim.o.mouse = 'a'
@@ -327,12 +373,12 @@ vim.keymap.set('n', '<leader>sr', require('telescope.builtin').resume, { desc = 
 -- See `:help nvim-treesitter`
 require('nvim-treesitter.configs').setup {
   -- Add languages to be installed here that you want installed for treesitter
-  ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'javascript', 'typescript', 'vimdoc', 'vim' },
+  ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'javascript', 'typescript', 'vimdoc', 'vim', 'markdown', 'markdown_inline' },
 
   -- Autoinstall languages that are not installed. Defaults to false (but you can change for yourself!)
   auto_install = false,
 
-  highlight = { enable = true },
+  highlight = { enable = true, additional_vim_regex_highlighting = { 'markdown' } },
   indent = { enable = true },
   incremental_selection = {
     enable = true,
