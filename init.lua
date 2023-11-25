@@ -88,6 +88,8 @@ require('lazy').setup({
 
       -- Additional lua configuration, makes nvim stuff amazing!
       'folke/neodev.nvim',
+
+    opts = { inlay_hints = { enabled = true } }, -- enabling inlay_hints
     },
   },
 
@@ -129,12 +131,21 @@ require('lazy').setup({
     },
   },
 
-  {
+--  {
     -- Theme inspired by Atom
-    'navarasu/onedark.nvim',
+--    'navarasu/onedark.nvim',
+--    priority = 1000,
+--    config = function()
+--      vim.cmd.colorscheme 'onedark'
+--    end,
+--  },
+
+  { -- Catppuccin theme, the best, really
+    'catppuccin/nvim',
+    name = 'catppuccin',
     priority = 1000,
     config = function()
-      vim.cmd.colorscheme 'onedark'
+      vim.cmd.colorscheme 'catppuccin'
     end,
   },
 
@@ -215,6 +226,9 @@ vim.o.hlsearch = false
 
 -- Make line numbers default
 vim.wo.number = true
+
+-- Relative line numbers
+vim.wo.relativenumber = true
 
 -- Enable mouse mode
 vim.o.mouse = 'a'
