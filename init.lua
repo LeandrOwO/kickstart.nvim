@@ -104,6 +104,45 @@ require('lazy').setup({
   },
 
   {
+    -- Specific tools for Rust LSP
+    'simrat39/rust-tools.nvim',
+    dependencies = {
+      'neovim/nvim-lspconfig',
+      'nvim-lua/plenary.nvim',
+      'mfussenegger/nvim-dap',
+    },
+    -- lazy = true,
+    opts = {
+      server = {
+        on_attach = function (_, bufnr)
+        end,
+        ['rust-analyzer'] = {
+        diagnostics = { enable = true },
+        inlayHints = {
+          typeHints = { enable = true },
+          expressionAdjustmentHints = { enable = "always"},
+          renderColons = { enable = true },
+          lifetimeElisionHints = {
+            enable = "always",
+            useParameterNames = true,
+            mode = "prefer_postfix"
+            },
+          check = {
+            command = "clippy"
+            },
+          checkOnSave = {
+            enable = true,
+            command = "clippy",
+            }
+          },
+        cmd = {'rust-analyzer'},
+        filetypes = {'rust'},
+      },
+    }
+  }
+  },
+
+  {
     -- Autocompletion
     'hrsh7th/nvim-cmp',
     dependencies = {
@@ -162,10 +201,10 @@ require('lazy').setup({
 
   {
     -- Theme inspired by Atom
-    'navarasu/onedark.nvim',
+    'catppuccin/nvim',
     priority = 1000,
     config = function()
-      vim.cmd.colorscheme 'onedark'
+      vim.cmd.colorscheme 'catppuccin'
     end,
   },
 
@@ -519,6 +558,7 @@ local on_attach = function(_, bufnr)
 
   nmap('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
   nmap('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
+  nmap('<leader>ca', vim.lsp.buf.format, '[C]ode [F]ormat')
 
   nmap('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
   nmap('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
@@ -588,31 +628,31 @@ local servers = {
     filetypes = {'lua'},
   },
   
-  rust_analyzer = {
-    ['rust-analyzer'] = {
-      diagnostics = { enable = true },
-      inlayHints = {
-        typeHints = { enable = true },
-        expressionAdjustmentHints = { enable = "always"},
-        renderColons = { enable = true },
-        lifetimeElisionHints ={
-          enable = "always",
-          useParameterNames = true,
-          mode = "prefer_postfix"
-        },
-        check = {
-          command = "clippy"
-        },
-        checkOnSave = {
-          enable = true,
-          command = "clippy",
-        }
-      }
-    },
-    cmd = {'rust-analyzer'},
-    filetypes = {'rust'},
+--  rust_analyzer = {
+--    ['rust-analyzer'] = {
+--      diagnostics = { enable = true },
+--      inlayHints = {
+--        typeHints = { enable = true },
+--        expressionAdjustmentHints = { enable = "always"},
+--        renderColons = { enable = true },
+--        lifetimeElisionHints ={
+--          enable = "always",
+--          useParameterNames = true,
+--          mode = "prefer_postfix"
+--        },
+--        check = {
+--          command = "clippy"
+--        },
+--        checkOnSave = {
+--          enable = true,
+--          command = "clippy",
+--        }
+--      }
+--    },
+--    cmd = {'rust-analyzer'},
+--    filetypes = {'rust'},
     --root_dir = require('lspconfig.util').root_pattern("Cargo.toml"),
-  }
+--  }
 }
 
 -- Setup neovim lua configuration
@@ -688,6 +728,17 @@ cmp.setup {
     { name = 'luasnip' },
   },
 }
+
+local rt = require("rust-tools")
+rt.setup({
+  server = {
+    on_attach = function(_, bufnr)
+    vim.keymap.set("n", "K", rt.hover_actions.hover_actions, { buffer = bufnr })
+    vim.keymap.set("n", "<leader>ca", rt.code_action_group.code_action_group, { buffer = bufnr })
+  end,
+  capabilities = capabilities
+  }
+})
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
