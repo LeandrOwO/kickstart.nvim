@@ -178,7 +178,7 @@ require('lazy').setup({
     -- See `:help lualine.txt`
     opts = {
       options = {
-        icons_enabled = false,
+        icons_enabled = true,
         theme = 'onedark',
         component_separators = '|',
         section_separators = '',
@@ -528,17 +528,18 @@ local servers = {
   -- clangd = {},
   -- gopls = {},
   -- pyright = {},
-  -- rust_analyzer = {},
   -- tsserver = {},
   -- html = { filetypes = { 'html', 'twig', 'hbs'} },
 
   lua_ls = {
     Lua = {
-      workspace = { checkThirdParty = false },
+      workspace = { checkThirdParty = false, library = vim.api.nvim_get_runtime_file("", true) },
       telemetry = { enable = false },
       -- NOTE: toggle below to ignore Lua_LS's noisy `missing-fields` warnings
       -- diagnostics = { disable = { 'missing-fields' } },
     },
+    cmd = {'lua-language-server'},
+    filetypes = {'lua'},
   },
 }
 
@@ -550,22 +551,21 @@ local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
 -- Ensure the servers above are installed
-local mason_lspconfig = require 'mason-lspconfig'
+-- local mason_lspconfig = require 'mason-lspconfig'
 
-mason_lspconfig.setup {
-  ensure_installed = vim.tbl_keys(servers),
-}
+--mason_lspconfig.setup {
+--  ensure_installed = vim.tbl_keys(servers),
+--}
 
-mason_lspconfig.setup_handlers {
-  function(server_name)
-    require('lspconfig')[server_name].setup {
+for lsp, _ in pairs(servers) do
+  require('lspconfig')[lsp].setup {
       capabilities = capabilities,
       on_attach = on_attach,
-      settings = servers[server_name],
-      filetypes = (servers[server_name] or {}).filetypes,
+      settings = servers[lsp],
+      filetypes = (servers[lsp] or {}).filetypes,
     }
-  end,
-}
+end
+
 
 -- [[ Configure nvim-cmp ]]
 -- See `:help cmp`
