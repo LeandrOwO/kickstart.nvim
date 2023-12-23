@@ -93,7 +93,7 @@ require('lazy').setup({
       -- Additional lua configuration, makes nvim stuff amazing!
       'folke/neodev.nvim',
 
-    opts = { inlay_hints = { enabled = true } }, -- enabling inlay_hints
+      opts = { inlay_hints = { enabled = true } }, -- enabling inlay_hints
     },
   },
 
@@ -114,7 +114,7 @@ require('lazy').setup({
   },
 
   -- Useful plugin to show you pending keybinds.
-  { 'folke/which-key.nvim', opts = {} },
+  { 'folke/which-key.nvim',  opts = {} },
   {
     -- Adds git related signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
@@ -154,14 +154,14 @@ require('lazy').setup({
     },
   },
 
---  {
-    -- Theme inspired by Atom
---    'navarasu/onedark.nvim',
---    priority = 1000,
---    config = function()
---      vim.cmd.colorscheme 'onedark'
---    end,
---  },
+  --  {
+  -- Theme inspired by Atom
+  --    'navarasu/onedark.nvim',
+  --    priority = 1000,
+  --    config = function()
+  --      vim.cmd.colorscheme 'onedark'
+  --    end,
+  --  },
 
   { -- Catppuccin theme, the best, really
     'catppuccin/nvim',
@@ -359,7 +359,7 @@ local function live_grep_git_root()
   local git_root = find_git_root()
   if git_root then
     require('telescope.builtin').live_grep({
-      search_dirs = {git_root},
+      search_dirs = { git_root },
     })
   end
 end
@@ -474,6 +474,7 @@ local on_attach = function(_, bufnr)
 
   nmap('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
   nmap('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
+  nmap('<leader>cf', vim.lsp.buf.format, '[C]ode [F]ormat')
 
   nmap('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
   nmap('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
@@ -538,8 +539,8 @@ local servers = {
       -- NOTE: toggle below to ignore Lua_LS's noisy `missing-fields` warnings
       -- diagnostics = { disable = { 'missing-fields' } },
     },
-    cmd = {'lua-language-server'},
-    filetypes = {'lua'},
+    cmd = { 'lua-language-server' },
+    filetypes = { 'lua' },
   },
 }
 
@@ -559,11 +560,11 @@ capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
 for lsp, _ in pairs(servers) do
   require('lspconfig')[lsp].setup {
-      capabilities = capabilities,
-      on_attach = on_attach,
-      settings = servers[lsp],
-      filetypes = (servers[lsp] or {}).filetypes,
-    }
+    capabilities = capabilities,
+    on_attach = on_attach,
+    settings = servers[lsp],
+    filetypes = (servers[lsp] or {}).filetypes,
+  }
 end
 
 
@@ -618,17 +619,17 @@ cmp.setup {
   },
 }
 
- local rt = require("rust-tools")
- rt.setup({
-   server = {
-     on_attach = function(_, bufnr)
-     vim.keymap.set("n", "K", rt.hover_actions.hover_actions, { buffer = bufnr })
-     vim.keymap.set("n", "<leader>ca", rt.code_action_group.code_action_group, { buffer = bufnr
-  })
-   end,
-   capabilities = capabilities
-   }
- })
+local rt = require("rust-tools")
+rt.setup({
+  server = {
+    on_attach = function(_, bufnr)
+      vim.keymap.set("n", "K", rt.hover_actions.hover_actions, { buffer = bufnr })
+      vim.keymap.set("n", "<leader>ca", rt.code_action_group.code_action_group, { buffer = bufnr
+      })
+    end,
+    capabilities = capabilities
+  }
+})
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
